@@ -109,7 +109,7 @@ func (t *HighLevelTracer) PostRun(vmCall *edb.Call, line *edb.Line) error {
 		stack.Push(n)
 		return nil
 
-	case vm.CALLDATACOPY:
+	case vm.CALLDATACOPY, vm.MCOPY:
 		memOffset, dataOffset, length := stack.Pop(), stack.Pop(), stack.Pop()
 		_, _, _ = memOffset, dataOffset, length
 
@@ -119,7 +119,7 @@ func (t *HighLevelTracer) PostRun(vmCall *edb.Call, line *edb.Line) error {
 		stack.Pop()
 		return nil
 
-	case vm.SHA3:
+	case vm.KECCAK256:
 		_, _ = stack.Pop(), stack.Pop()
 
 		vmOffset, vmSize := t.StackPre.PeekI(0).Uint64(), t.StackPre.PeekI(1).Uint64()
@@ -262,7 +262,7 @@ func (t *HighLevelTracer) PostRun(vmCall *edb.Call, line *edb.Line) error {
 	case vm.JUMPDEST:
 		return nil
 
-	case vm.PUSH1, vm.PUSH2, vm.PUSH3, vm.PUSH4, vm.PUSH5, vm.PUSH6, vm.PUSH7, vm.PUSH8, vm.PUSH9, vm.PUSH10, vm.PUSH11, vm.PUSH12, vm.PUSH13, vm.PUSH14, vm.PUSH15, vm.PUSH16, vm.PUSH17, vm.PUSH18, vm.PUSH19, vm.PUSH20, vm.PUSH21, vm.PUSH22, vm.PUSH23, vm.PUSH24, vm.PUSH25, vm.PUSH26, vm.PUSH27, vm.PUSH28, vm.PUSH29, vm.PUSH30, vm.PUSH31, vm.PUSH32:
+	case vm.PUSH0, vm.PUSH1, vm.PUSH2, vm.PUSH3, vm.PUSH4, vm.PUSH5, vm.PUSH6, vm.PUSH7, vm.PUSH8, vm.PUSH9, vm.PUSH10, vm.PUSH11, vm.PUSH12, vm.PUSH13, vm.PUSH14, vm.PUSH15, vm.PUSH16, vm.PUSH17, vm.PUSH18, vm.PUSH19, vm.PUSH20, vm.PUSH21, vm.PUSH22, vm.PUSH23, vm.PUSH24, vm.PUSH25, vm.PUSH26, vm.PUSH27, vm.PUSH28, vm.PUSH29, vm.PUSH30, vm.PUSH31, vm.PUSH32:
 		n := &Const{}
 		n.Val = t.StackPost.Pop()
 		stack.Push(n)

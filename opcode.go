@@ -72,7 +72,7 @@ func init() {
 		vm.SHL:            make_op(vm.SHL, 0, fixedGas(3), 2, 1, opSHL),                             // 0x1b
 		vm.SHR:            make_op(vm.SHR, 0, fixedGas(3), 2, 1, opSHR),                             // 0x1c
 		vm.SAR:            make_op(vm.SAR, 0, fixedGas(3), 2, 1, opSAR),                             // 0x1d
-		vm.SHA3:           make_op(vm.SHA3, 0, gasSha3, 2, 1, opSha3),                               // 0x20
+		vm.KECCAK256:      make_op(vm.KECCAK256, 0, gasSha3, 2, 1, opSha3),                          // 0x20
 		vm.ADDRESS:        make_op(vm.ADDRESS, 0, fixedGas(2), 0, 1, opAddress),                     // 0x30
 		vm.BALANCE:        make_op(vm.BALANCE, 0, fixedGas(20), 1, 1, opBalance),                    // 0x31
 		vm.ORIGIN:         make_op(vm.ORIGIN, 0, fixedGas(2), 0, 1, opOrigin),                       // 0x32
@@ -110,6 +110,8 @@ func init() {
 		vm.MSIZE:          make_op(vm.MSIZE, 0, fixedGas(2), 0, 1, opMsize),                         // 0x59
 		vm.GAS:            make_op(vm.GAS, 0, fixedGas(2), 0, 1, opGas),                             // 0x5a
 		vm.JUMPDEST:       make_op(vm.JUMPDEST, 0, fixedGas(1), 0, 0, opJumpdest),                   // 0x5b
+		vm.MCOPY:          make_op(vm.MCOPY, 0, /* ACTUALLY NOT FIXED */ fixedGas(1), 3, 0, opMCopy),// 0x5b
+		vm.PUSH0:          make_op(vm.PUSH0, 0, fixedGas(3), 0, 1, makePush(0)),                     // 0x5f
 		vm.PUSH1:          make_op(vm.PUSH1, 1, fixedGas(3), 0, 1, makePush(1)),                     // 0x60
 		vm.PUSH2:          make_op(vm.PUSH2, 2, fixedGas(3), 0, 1, makePush(2)),                     // 0x61
 		vm.PUSH3:          make_op(vm.PUSH3, 3, fixedGas(3), 0, 1, makePush(3)),                     // 0x62
@@ -1023,6 +1025,18 @@ func opStop(ctx *Context) error {
 func opSuicide(ctx *Context) error {
 	beneficiary := ctx.Stack().Pop()
 	return fmt.Errorf("opSuicide -> %s", beneficiary.ToBig().String())
+}
+
+func opMCopy(ctx *Context) error {
+	var (
+		dst    = ctx.Stack().Pop()
+		src    = ctx.Stack().Pop()
+		length = ctx.Stack().Pop()
+	)
+	// These values are checked for overflow during memory expansion calculation
+	// (the memorySize function on the opcode).
+	ctx.Memory().Copy(dst.Uint64(), src.Uint64(), length.Uint64())
+	return nil
 }
 
 // following functions are used by the instruction jump  table

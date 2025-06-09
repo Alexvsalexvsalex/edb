@@ -36,7 +36,7 @@ func (t *ParamTracer) PreRun(call *edb.Call, line *edb.Line) error {
 	// Memory:
 	//   memory is only used for some op code
 	switch line.Op.OpCode {
-	case vm.SHA3, vm.MLOAD, vm.MSTORE, vm.MSTORE8, vm.CALL, vm.DELEGATECALL, vm.STATICCALL:
+	case vm.KECCAK256, vm.MLOAD, vm.MSTORE, vm.MSTORE8, vm.CALL, vm.DELEGATECALL, vm.STATICCALL:
 		m := call.Memory.Data()
 		t.MemPre = append(m[:0:0], m...) // clone byte slice
 	}
@@ -57,7 +57,7 @@ func (t *ParamTracer) PostRun(call *edb.Call, line *edb.Line) error {
 	//   Memory is only used for opcodes below.
 	//   Not copy memory for other opcodes to improve performance.
 	switch line.Op.OpCode {
-	case vm.SHA3, vm.MLOAD, vm.MSTORE, vm.MSTORE8, vm.CALL,
+	case vm.KECCAK256, vm.MLOAD, vm.MSTORE, vm.MSTORE8, vm.CALL,
 		vm.DELEGATECALL, vm.STATICCALL, vm.CODECOPY, vm.CALLDATACOPY,
 		vm.RETURNDATACOPY, vm.EXTCODECOPY, vm.RETURN, vm.REVERT:
 

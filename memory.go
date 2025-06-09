@@ -110,3 +110,11 @@ func (m *Memory) Len() uint64 {
 func (m *Memory) Data() []byte {
 	return m.store
 }
+
+// Copy copies data from the src position slice into the dst position.
+func (m *Memory) Copy(dst, src, len uint64) {
+	if len == 0 {
+		return
+	}
+	copy(m.store[dst:], m.store[src:src+len])
+}

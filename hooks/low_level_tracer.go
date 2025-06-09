@@ -33,7 +33,7 @@ func (t *LowLevelTracer) PostRun(call *edb.Call, line *edb.Line) error {
 	t.ParamTracer.PostRun(call, line)
 
 	switch opcode {
-	case vm.SHA3:
+	case vm.KECCAK256:
 		// get result from stack
 		color.Magenta("\nSHA3 memory (")
 		// mem :=

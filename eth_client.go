@@ -7,6 +7,7 @@ import (
 
 	"github.com/aj3423/edb/util"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/holiman/uint256"
@@ -137,7 +138,7 @@ func ContextFromTx(
 	if e != nil {
 		return nil, e
 	}
-	msg, e := tx.AsMessage(types.NewLondonSigner(big.NewInt(int64(chain_id.Uint64()))), nil)
+	msg, e := core.TransactionToMessage(tx, types.NewLondonSigner(big.NewInt(int64(chain_id.Uint64()))), nil)
 	if e != nil {
 		return nil, e
 	}
@@ -153,7 +154,7 @@ func ContextFromTx(
 
 	ctx.Tx = Tx{
 		Hash:     tx.Hash(),
-		Origin:   msg.From(),
+		Origin:   msg.From,
 		GasPrice: tx.GasPrice().Uint64(),
 	}
 	baseFee := big.NewInt(0)
@@ -180,8 +181,8 @@ func ContextFromTx(
 	ctx.Call().Msg = Msg{
 		Data:   tx.Data(),
 		Gas:    tx.Gas(),
-		Sender: msg.From(),
-		Value:  msg.Value(),
+		Sender: msg.From,
+		Value:  msg.Value,
 	}
 
 	_, e = ensure_code(ctx, to)
